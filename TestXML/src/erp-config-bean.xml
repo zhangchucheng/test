@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans>
+	<bean id="erpConfigSetupSet" class="fe.ext.erp.common.ErpConfigSetupSet" singleton="true">
+		<!-- ping.chen 2012-12-26 11:27 
+			主要分四大部分:[不用实例化,不用从内存中获取,直接ErpConfigSetupSet.方法(...)得到值]
+			1.基础配置信息erpBaseParameter:通用全局配置	可自行添加参数然后用getErpBaseParameter(key)获取使用
+			2.具体配置信息:erpParameterList:每一个MAP为一个服务器配置[其区分:大类:NC/U8 小类:服务器编码两个合成一个erpType参数如[NC_01]
+			3.ERP账套信息:erpAccountInfo:每个MAP里面只有一个erpType参数与ERP类型对应[一种ERP只有一个MAP账套]
+						 账套名的规则:服务器编码[如服务器NC_01:则服务器编码为01]_实际账套编码
+						 账套编码对应的数据库规则:db_服务器编码_实际账套编码
+						 定位账套:通过ERP类型[erpType]和账套编码可指定唯一的要操作的账套
+			4.基础数据配置:此数据不提供界面操作配置
+				a.erpTypeInfo[ERP类型基础信息]:NC/U8  ..
+				b.erpDbInfo[数据库类型信息]:MSSQL/ORCAL..->(fs,basicService.editTableByFilter(ERP_ACCOUNT_INFO,1=1));;
+->(status,ESI_TYPE='{#fs.EAI_TYPE#}');; EFI_TYPE
+->(erpType,erpConfigSetupSet.getErpStart());;
+->(status,ESO14='{#erpType#}');;
+		-->
+		<property name="erpBaseParameter"><!-- 基础配置信息 -->
+			<map>
+				<entry key="erpStart"><value>U8</value></entry>  <!-- 启动的ERP -->
+				<entry key="syncRow"><value>2000</value></entry> <!-- 更新行数 -->
+				<entry key="isOpenDevelop"><value>1</value></entry><!-- 是否开启开发套件 -->
+				<entry key="isShowHelp"><value>1</value></entry><!-- 是否显示帮助 -->
+				<entry key="isMoreService"><value>0</value></entry><!-- 是否启用多服务器 -->
+				<entry key="defaultConn"><value>SQL</value></entry><!-- 默认同步方式 -->
+				<entry key="isThread"><value>1</value></entry><!-- 同步数据是否采用线程 -->
+				<entry key="isOrderTime"><value>1</value></entry><!-- 是否启用定时同步[定时同步总开关] -->
+			</map>
+		</property>
+		
+		<property name="erpParameterList"><!-- 具体配置信息:ERP连接配置 -->
+			<list>
+				<map><!-- NC连接配置 -->
+					<entry key="erpType"><value>NC_01</value></entry><!-- 类型名称:规则[ERP类型_服务器编码][默认:ERP类型] -->
+					<entry key="dbType"><value>ORACLE</value></entry><!-- 当前服务器的数据库类型 -->
+					<entry key="webUrl"><value>127.0.0.1</value></entry><!-- web服务地址 -->
+					<entry key="eaiUrl"><value>127.0.0.1</value></entry><!-- EAI服务地址 -->
+					<entry key="sqlIp"><value>10.62.3.138</value></entry><!-- 数据库连接地址 -->
+					<entry key="defaultDbName"><value>UfSystem</value></entry><!-- 默认数据库名[ORACLE为SID] -->
+					<entry key="defaultAccount"><value>001</value></entry><!-- 默认账套编码 规则[服务器编码_账套编码][默认:账套编码] -->
+					<entry key="dbUser"><value>sa</value></entry><!-- 数据库用户名 -->
+					<entry key="dbPws"><value>123</value></entry><!-- 数据库用密码 -->
+					<entry key="other"><value>1</value></entry><!-- 其它 -->
+					<!-- 以下为开发内置:不能在可视界面修改[要修改需重启OA] -->
+					<entry key="webEnd"><value>/axis2/services/WebServicesServer</value></entry><!-- web服务地址的后缀 -->
+					<entry key="eaiEnd"><value>/axis2/services/WebServicesServer</value></entry><!-- EAI服务地址的后缀 -->
+					<entry key="isDefault"><value>1</value></entry><!-- 是否默认服务器 -->
+					<entry key="isStart"><value>1</value></entry><!-- 是否启用 -->
+				</map>
+				<map><!-- U8连接配置 -->
+					<entry key="erpType"><value>U8_01</value></entry><!-- 类型名称:规则[ERP类型_服务器编码]默认不用加 -->
+					<entry key="dbType"><value>MSSQL</value></entry>
+					<entry key="webUrl"><value>10.62.3.138</value></entry>
+					<entry key="eaiUrl"><value>10.62.3.138</value></entry>
+					<entry key="sqlIp"><value>10.62.3.138</value></entry>
+					<entry key="defaultDbName"><value>UfSystem</value></entry>
+					<entry key="defaultAccount"><value>004</value></entry>
+					<entry key="dbUser"><value>sa</value></entry>
+					<entry key="dbPws"><value>123</value></entry>
+					<entry key="other"><value>是否按年份更新数据库名如:004账套[2011年:UFDATA_004_2011/2012年则:UFDATA_004_2012]</value></entry>					
+					<!-- 以下为开发内置:不能在可视界面修改[要修改需重启OA] -->
+					<entry key="webEnd"><value>/FEOADataPush/Service.asmx</value></entry><!-- web服务地址的后缀 -->
+					<entry key="eaiEnd"><value>/u8eai/import.asp</value></entry><!-- EAI服务地址的后缀 -->
+					<entry key="isDefault"><value>1</value></entry><!-- 是否默认服务器 -->
+					<entry key="isStart"><value>1</value></entry><!-- 是否启用 -->
+				</map>
+				<map><!-- U8连接配置 -->
+					<entry key="erpType"><value>U8_02</value></entry><!-- 类型名称:规则[ERP类型_服务器编码]默认不用加 -->
+					<entry key="dbType"><value>MSSQL</value></entry>
+					<entry key="webUrl"><value>10.62.3.138</value></entry>
+					<entry key="eaiUrl"><value>10.62.3.138</value></entry>
+					<entry key="sqlIp"><value>10.62.3.138</value></entry>
+					<entry key="defaultDbName"><value>UfSystem</value></entry>
+					<entry key="defaultAccount"><value>004</value></entry>
+					<entry key="dbUser"><value>sa</value></entry>
+					<entry key="dbPws"><value>123</value></entry>
+					<entry key="other"><value>1</value></entry>					
+					<!-- 以下为开发内置:不能在可视界面修改[要修改需重启OA] -->
+					<entry key="webEnd"><value>/FEOADataPush/Service.asmx</value></entry><!-- web服务地址的后缀 -->
+					<entry key="eaiEnd"><value>/u8eai/import.asp</value></entry><!-- EAI服务地址的后缀 -->
+					<entry key="isDefault"><value>0</value></entry><!-- 是否默认服务器 -->
+					<entry key="isStart"><value>1</value></entry><!-- 是否启用 -->
+				</map>
+			</list>
+		</property>	
+		<property name="erpAccountInfo"><!-- ERP账套信息 -->
+			<list>
+				<map><!-- NC所有账套 -->
+					<entry key="erpType"><value>NC</value></entry>
+					<entry key="01_001"><value>珠海飞企</value></entry><!-- 账套编码:默认服务器[账套名],其他服务器[账套名_服务器编码] -->
+					<entry key="db01_001"><value>default</value></entry><!-- 对应数据库名[专用于U8或像U8一样每个账套一个数据库的ERP[不是多账套多库的都为default] -->
+				</map>
+				<map><!-- U8 -->
+					<entry key="erpType"><value>U8</value></entry>
+					<entry key="01_000"><value>系统账套</value></entry>
+				    <entry key="db01_000"><value>UfSystem</value></entry> 
+					<entry key="01_004"><value>默认珠海飞企</value></entry>
+				    <entry key="db01_004"><value>UFDATA_004_2012</value></entry> 
+					<entry key="01_005"><value>默认珠海飞企5</value></entry>
+					<entry key="db01_005"><value>UFDATA_005_2012</value></entry> 
+					<entry key="02_000"><value>系统账套</value></entry>
+				    <entry key="db02_000"><value>UfSystem</value></entry>
+					<entry key="02_004"><value>02珠海飞企</value></entry>
+					<entry key="db02_004"><value>UFDATA_004_2012</value></entry> 
+					<entry key="02_005"><value>02珠海飞企5</value></entry>
+					<entry key="db02_005"><value>UFDATA_005_2012</value></entry> 
+				</map>
+			</list>
+		</property>
+		<property name="erpTypeInfo"><!-- 基础数据:ERP类型信息 -->
+			<map>
+				<entry key="NC"><value>NC</value></entry>
+				<entry key="U8"><value>U8</value></entry>
+			</map>
+		</property>
+		<property name="erpDbInfo"><!-- 基础数据:数据库类型信息 -->
+			<list>
+				<map><!-- MSSQL -->
+					<entry key="dbName"><value>MSSQL</value></entry>
+					<entry key="dbDriver"><value>com.microsoft.sqlserver.jdbc.SQLServerDriver</value></entry>
+					<entry key="dbTop"><value>jdbc:sqlserver://</value></entry>
+					<entry key="dbBtn"><value>;DatabaseName=</value></entry>
+				</map>
+				<map><!-- ORACLE -->
+					<entry key="dbName"><value>ORACLE</value></entry>
+					<entry key="dbDriver"><value>oracle.jdbc.driver.OracleDriver</value></entry><!-- 数据库连接驱动 -->
+					<entry key="dbTop"><value>jdbc:oracle:thin:@</value></entry><!-- 数据库URL的前缀 -->
+					<entry key="dbBtn"><value>:</value></entry>
+				</map>
+			</list>
+		</property>		
+	</bean>
+</beans>
